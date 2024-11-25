@@ -6,7 +6,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import org.java_websocket.WebSocket;
-import org.java_websocket.enums.Opcode;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.*;
@@ -23,8 +22,6 @@ public class SimpleServer extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        // conn.send("Welcome to the server!"); // This method sends a message to the new client
-
         logger.info("Client connected from " + conn.getRemoteSocketAddress().getAddress());
 
         File file = new File("T06xxyyy.zip");
@@ -37,13 +34,8 @@ public class SimpleServer extends WebSocketServer {
             byte[] buffer = new byte[CHUNK_SIZE];
             int bytesRead;
 
-            boolean isLastChunk;
-
-            logger.info("Sending file by chunking (10240 bytes)");
+            // logger.info("Sending file by chunking (10240 bytes)");
             while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                isLastChunk = (fileInputStream.available() == 0); // check if is the last chunk
-                // String strIdx = idx + "";
-                // System.out.println(strIdx + ". Sending: " + bytesRead + " bytes");
                 logger.info("Sending 10240");
                 ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
 
@@ -65,7 +57,6 @@ public class SimpleServer extends WebSocketServer {
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(userFile);
             conn.send(json);
-            // session.getBasicRemote().sendText(json);
             logger.info("File name and user name sent");
         } catch (Exception e) {
             logger.error("error at sending file name and user name");
@@ -96,14 +87,6 @@ public class SimpleServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-        System.out.println("server started successfully");
-    }
-
-    public static void main(String[] args) {
-        String host = "localhost";
-        int port = 8887;
-
-        WebSocketServer server = new SimpleServer(new InetSocketAddress(host, port));
-        server.run();
+        logger.info("Server started at ws://localhost:8887");
     }
 }
