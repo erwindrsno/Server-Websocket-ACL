@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,14 +35,9 @@ public class SimpleServer extends WebSocketServer {
         //TODO: Temporary storing UUID as key
         //IDEA: STORING LAB NAME 
         //e.g: LAB01-08, and etc
+        // Map<String, Integer> map = new HashMap<>();
         String clientId = UUID.randomUUID().toString();
         clients.put(clientId, conn);
-    }
-
-    @Override
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        System.out.println(
-                "closed " + conn.getRemoteSocketAddress().getAddress() + " with exit code " + code + " additional info: " + reason);
     }
 
     @Override
@@ -90,6 +87,12 @@ public class SimpleServer extends WebSocketServer {
                 }
             }
         }).start();
+    }
+
+    @Override
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        System.out.println(
+                "closed " + conn.getRemoteSocketAddress().getAddress() + " with exit code " + code + " additional info: " + reason);
     }
 
     public void sendFile() {

@@ -6,7 +6,7 @@ import org.java_websocket.server.WebSocketServer;
 
 public class App {
     public static void main(String[] args) {
-        String host = "localhost";
+        String host = "192.168.0.102";
         int port = 8887;
 
         WebSocketServer server = new SimpleServer(new InetSocketAddress(host, port));
