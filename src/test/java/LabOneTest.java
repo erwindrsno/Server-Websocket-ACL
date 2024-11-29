@@ -17,4 +17,18 @@ public class LabOneTest {
         String actual = l1.getHostnameByIP("10.100.71.208");
         assertEquals("LAB01-08",actual);
     }
+
+    @Test
+    public void testGetFirstIp(){
+        BaseLab l1 = new LabOne();
+        String actual = l1.getHostnameByIP("10.100.71.201");
+        assertEquals("LAB01-01",actual);
+    }
+
+    @Test
+    public void testGetLastIp(){
+        BaseLab l1 = new LabOne();
+        String actual = l1.getHostnameByIP("10.100.71.240");
+        assertEquals("LAB01-40",actual);
+    }
 }

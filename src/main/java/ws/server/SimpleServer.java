@@ -19,18 +19,17 @@ import org.slf4j.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ws.server.lab.*;
+import ws.server.lab.BaseLab.Client;
 
 public class SimpleServer extends WebSocketServer {
     final int CHUNK_SIZE = 10240;
     Logger logger = LoggerFactory.getLogger(SimpleServer.class);
     Scanner sc = new Scanner(System.in);
-    private final ConcurrentHashMap<String, WebSocket> clients01 = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, WebSocket> clients02 = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, WebSocket> clients03 = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, WebSocket> clients04 = new ConcurrentHashMap<>();
 
     BaseLab l1 = new LabOne();
     BaseLab l2 = new LabTwo();
+    BaseLab l3 = new LabThree();
+    BaseLab l4 = new LabFour();
 
     public SimpleServer(InetSocketAddress address) {
         super(address);
@@ -39,32 +38,10 @@ public class SimpleServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         logger.info("Client connected from " + conn.getRemoteSocketAddress().getAddress());
-
-        //TODO: Temporary storing UUID as key
-        //IDEA: STORING LAB NAME 
-        //e.g: LAB01-08, and etc
-        // Map<String, Integer> map = new HashMap<>();
-        // String clientId = UUID.randomUUID().toString();
-        // clients.put(clientId, conn);
-        String ip = conn.getRemoteSocketAddress().getAddress().getHostAddress();
-        if(ip.startsWith("10.100.71")){
-            clients01.put(conn.getRemoteSocketAddress().getAddress().getHostAddress(), conn);
-        } 
-        else if(ip.startsWith("10.100.72")){
-            clients02.put(conn.getRemoteSocketAddress().getAddress().getHostAddress(), conn);
-        }
-        else if(ip.startsWith("10.100.73")){
-            clients03.put(conn.getRemoteSocketAddress().getAddress().getHostAddress(), conn);
-        } 
-        else{
-            clients04.put(conn.getRemoteSocketAddress().getAddress().getHostAddress(), conn);
-        }
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        // System.out.println("received message from " + conn.getRemoteSocketAddress() + ": " + message);
-        // logger.info("Received Pong from : " + conn.getRemoteSocketAddress());
         if(message.equals("PONG")){
             String connIp = conn.getRemoteSocketAddress().getAddress().getHostAddress();
             if(connIp.startsWith("10.100.71")){
@@ -75,15 +52,14 @@ public class SimpleServer extends WebSocketServer {
                 l2.setActiveByIP(connIp);
                 logger.info(l2.getHostnameByIP(connIp) + " is active");
             }
-            // else if(connIp.startsWith("10.100.73")){
-            //     l3.setActiveByIP(connIp);
-            // } 
-            // else{
-            //     l4.setActiveByIP(connIp);
-            // }
-            // l2.setActiveByIP(connIp);
-            // logger.info(l2.getHostnameByIP(connIp) + " is active");
-            // logger.info("Received Pong from : " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+            else if(connIp.startsWith("10.100.73")){
+                l3.setActiveByIP(connIp);
+                logger.info(l3.getHostnameByIP(connIp) + " is active");
+            } 
+            else{
+                l4.setActiveByIP(connIp);
+                logger.info(l4.getHostnameByIP(connIp) + " is active");
+            }
         }
     }
 
@@ -112,7 +88,7 @@ public class SimpleServer extends WebSocketServer {
         new Thread(() -> {
             logger.info("Command receiver thread started");
             while(true){
-                System.out.print("Command : ");
+                // System.out.print("Command : ");
                 String command = sc.nextLine();
                 switch(command){
                     case "ping":
@@ -120,19 +96,19 @@ public class SimpleServer extends WebSocketServer {
                         break;
 
                     case "ping 1":
-                        pingLabOne();
+                        pingLab(l1.getClients());
                         break;
 
                     case "ping 2":
-                        pingLabTwo();
+                        pingLab(l2.getClients());
                         break;
 
                     case "ping 3":
-                        pingLabThree();
+                        pingLab(l3.getClients());
                         break;
 
                     case "ping 4":
-                        pingLabFour();
+                        pingLab(l4.getClients());
                         break;
                     
                     case "send":
@@ -190,27 +166,9 @@ public class SimpleServer extends WebSocketServer {
         }
     }
 
-    public void pingLabOne(){
-        for(WebSocket client : clients01.values()){
-            client.send("PING");
-        }
-    }
-
-    public void pingLabTwo(){
-        for(WebSocket client : clients02.values()){
-            client.send("PING");
-        }
-    }
-
-    public void pingLabThree(){
-        for(WebSocket client : clients03.values()){
-            client.send("PING");
-        }
-    }
-
-    public void pingLabFour(){
-        for(WebSocket client : clients04.values()){
-            client.send("PING");
+    public void pingLab(ConcurrentHashMap<String, Client> clients){
+        for(Client client : clients.values()){
+            client.getConn().send("PING");
         }
     }
 }

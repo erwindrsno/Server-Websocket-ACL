@@ -18,4 +18,18 @@ public class LabTwoTest {
         String actual = l2.getHostnameByIP("10.100.72.205");
         assertEquals("LAB02-05",actual);
     }
+
+    @Test
+    public void testGetFirstIp(){
+        BaseLab l2 = new LabTwo();
+        String actual = l2.getHostnameByIP("10.100.72.201");
+        assertEquals("LAB02-01",actual);
+    }
+
+    @Test
+    public void testGetLastIp(){
+        BaseLab l2 = new LabTwo();
+        String actual = l2.getHostnameByIP("10.100.72.245");
+        assertEquals("LAB02-45",actual);
+    }
 }

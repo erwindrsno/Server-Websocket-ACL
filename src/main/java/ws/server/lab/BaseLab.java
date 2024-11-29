@@ -3,18 +3,20 @@ package ws.server.lab;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.java_websocket.WebSocket;
 
 //q : kenapa perlu bikin parent class?
-//a : reusability
+//a : reusability, supaya ketika perlu konfigurasi untuk lab tertentu, cukup konfig di children class nya aja tanpa berpengaruh ke class parent.
 
 public class BaseLab {
-    // List<Client> clients = new ArrayList<>();
-    HashMap<String, Client> clients = new HashMap<>();
+    ConcurrentHashMap<String, Client> clients = new ConcurrentHashMap<>();
     int clientsCounts;
 
-    BaseLab(int labId, int clientsCount){
-        this.clientsCounts = clientsCount;
-        for (int i = 1; i <= clientsCount; i++) {
+    BaseLab(int labId, int clientsCountPerLab){
+        this.clientsCounts = clientsCountPerLab;
+        for (int i = 1; i <= clientsCountPerLab; i++) {
             StringBuilder ip = new StringBuilder("10.100.7"+labId+".2");
             StringBuilder hostname = new StringBuilder("LAB0"+labId+"-");
             if(i < 10){
@@ -46,14 +48,20 @@ public class BaseLab {
         clients.get(ip).setActive();
     }
 
-    class Client{
+    public ConcurrentHashMap<String, Client> getClients(){
+        return clients;
+    }
+
+    public class Client{
         // private String ip;
         private String hostname;
         private boolean isActive;
+        private WebSocket conn;
 
         public Client(String hostname){
             this.hostname = hostname;
             this.isActive = false;
+            this.conn = null;
         }
 
         public String getHostname(){
@@ -74,6 +82,14 @@ public class BaseLab {
 
         public void setNotActive(){
             this.isActive = false;
+        }
+
+        public WebSocket getConn(){
+            return this.conn;
+        }
+
+        public void setConn(WebSocket conn){
+            this.conn = conn;
         }
     }
 }
