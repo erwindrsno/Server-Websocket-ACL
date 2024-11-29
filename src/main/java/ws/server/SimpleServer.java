@@ -67,8 +67,22 @@ public class SimpleServer extends WebSocketServer {
         // logger.info("Received Pong from : " + conn.getRemoteSocketAddress());
         if(message.equals("PONG")){
             String connIp = conn.getRemoteSocketAddress().getAddress().getHostAddress();
-            l2.setActiveByIP(connIp);
-            logger.info(l2.getHostnameByIP(connIp) + " is active");
+            if(connIp.startsWith("10.100.71")){
+                l1.setActiveByIP(connIp);
+                logger.info(l1.getHostnameByIP(connIp) + " is active");
+            } 
+            else if(connIp.startsWith("10.100.72")){
+                l2.setActiveByIP(connIp);
+                logger.info(l2.getHostnameByIP(connIp) + " is active");
+            }
+            // else if(connIp.startsWith("10.100.73")){
+            //     l3.setActiveByIP(connIp);
+            // } 
+            // else{
+            //     l4.setActiveByIP(connIp);
+            // }
+            // l2.setActiveByIP(connIp);
+            // logger.info(l2.getHostnameByIP(connIp) + " is active");
             // logger.info("Received Pong from : " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
         }
     }
