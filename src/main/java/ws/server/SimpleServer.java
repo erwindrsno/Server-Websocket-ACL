@@ -45,7 +45,7 @@ public class SimpleServer extends WebSocketServer {
         // System.out.println("received message from " + conn.getRemoteSocketAddress() + ": " + message);
         // logger.info("Received Pong from : " + conn.getRemoteSocketAddress());
         if(message.equals("PONG")){
-            logger.info("Received Pong from : " + conn.getRemoteSocketAddress().getAddress());
+            logger.info("Received Pong from : " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
         }
     }
 
