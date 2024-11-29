@@ -18,11 +18,16 @@ import org.slf4j.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ws.server.lab.*;
+
 public class SimpleServer extends WebSocketServer {
     final int CHUNK_SIZE = 10240;
     Logger logger = LoggerFactory.getLogger(SimpleServer.class);
     Scanner sc = new Scanner(System.in);
     private final ConcurrentHashMap<String, WebSocket> clients = new ConcurrentHashMap<>();
+
+    BaseLab l1 = new LabOne();
+    BaseLab l2 = new LabTwo();
 
     public SimpleServer(InetSocketAddress address) {
         super(address);
@@ -45,7 +50,10 @@ public class SimpleServer extends WebSocketServer {
         // System.out.println("received message from " + conn.getRemoteSocketAddress() + ": " + message);
         // logger.info("Received Pong from : " + conn.getRemoteSocketAddress());
         if(message.equals("PONG")){
-            logger.info("Received Pong from : " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+            String connIp = conn.getRemoteSocketAddress().getAddress().getHostAddress();
+            l2.setActiveByIP(connIp);
+            logger.info(l2.getHostnameByIP(connIp) + " is active");
+            // logger.info("Received Pong from : " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
         }
     }
 
