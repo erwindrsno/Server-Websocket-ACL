@@ -10,8 +10,10 @@ import java.util.List;
 public class BaseLab {
     // List<Client> clients = new ArrayList<>();
     HashMap<String, Client> clients = new HashMap<>();
+    int clientsCounts;
 
     BaseLab(int labId, int clientsCount){
+        this.clientsCounts = clientsCount;
         for (int i = 1; i <= clientsCount; i++) {
             StringBuilder ip = new StringBuilder("10.100.7"+labId+".2");
             StringBuilder hostname = new StringBuilder("LAB0"+labId+"-");
@@ -26,6 +28,10 @@ public class BaseLab {
             String strHostname = hostname.toString();
             clients.put(strIp, new Client(strHostname));
         }
+    }
+
+    public int getClientsCounts(){
+        return clientsCounts;
     }
 
     public String getHostnameByIP(String ip){

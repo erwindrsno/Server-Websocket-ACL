@@ -24,7 +24,10 @@ public class SimpleServer extends WebSocketServer {
     final int CHUNK_SIZE = 10240;
     Logger logger = LoggerFactory.getLogger(SimpleServer.class);
     Scanner sc = new Scanner(System.in);
-    private final ConcurrentHashMap<String, WebSocket> clients = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WebSocket> clients01 = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WebSocket> clients02 = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WebSocket> clients03 = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WebSocket> clients04 = new ConcurrentHashMap<>();
 
     BaseLab l1 = new LabOne();
     BaseLab l2 = new LabTwo();
@@ -41,8 +44,21 @@ public class SimpleServer extends WebSocketServer {
         //IDEA: STORING LAB NAME 
         //e.g: LAB01-08, and etc
         // Map<String, Integer> map = new HashMap<>();
-        String clientId = UUID.randomUUID().toString();
-        clients.put(clientId, conn);
+        // String clientId = UUID.randomUUID().toString();
+        // clients.put(clientId, conn);
+        String ip = conn.getRemoteSocketAddress().getAddress().getHostAddress();
+        if(ip.startsWith("10.100.71")){
+            clients01.put(conn.getRemoteSocketAddress().getAddress().getHostAddress(), conn);
+        } 
+        else if(ip.startsWith("10.100.72")){
+            clients02.put(conn.getRemoteSocketAddress().getAddress().getHostAddress(), conn);
+        }
+        else if(ip.startsWith("10.100.73")){
+            clients03.put(conn.getRemoteSocketAddress().getAddress().getHostAddress(), conn);
+        } 
+        else{
+            clients04.put(conn.getRemoteSocketAddress().getAddress().getHostAddress(), conn);
+        }
     }
 
     @Override
@@ -83,12 +99,28 @@ public class SimpleServer extends WebSocketServer {
             logger.info("Command receiver thread started");
             while(true){
                 System.out.print("Command : ");
-                String command = sc.next();
+                String command = sc.nextLine();
                 switch(command){
                     case "ping":
                         broadcast("PING");
                         break;
 
+                    case "ping 1":
+                        pingLabOne();
+                        break;
+
+                    case "ping 2":
+                        pingLabTwo();
+                        break;
+
+                    case "ping 3":
+                        pingLabThree();
+                        break;
+
+                    case "ping 4":
+                        pingLabFour();
+                        break;
+                    
                     case "send":
                         sendFile();
                         break;
@@ -141,6 +173,30 @@ public class SimpleServer extends WebSocketServer {
         } catch (Exception e) {
             logger.error("error at sending file name and user name");
             e.printStackTrace();
+        }
+    }
+
+    public void pingLabOne(){
+        for(WebSocket client : clients01.values()){
+            client.send("PING");
+        }
+    }
+
+    public void pingLabTwo(){
+        for(WebSocket client : clients02.values()){
+            client.send("PING");
+        }
+    }
+
+    public void pingLabThree(){
+        for(WebSocket client : clients03.values()){
+            client.send("PING");
+        }
+    }
+
+    public void pingLabFour(){
+        for(WebSocket client : clients04.values()){
+            client.send("PING");
         }
     }
 }
