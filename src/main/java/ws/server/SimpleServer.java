@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
@@ -14,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.java_websocket.WebSocketAdapter;
+import org.java_websocket.framing.Framedata;
 import org.slf4j.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +44,7 @@ public class SimpleServer extends WebSocketServer {
             if(connIp.startsWith("10.100.71")){
                 logger.info("New connection from " + connIp);
                 l1.setClientConnection(connIp, conn);
+                l1.getClients().get(connIp).getConn().toString();
             } 
             else if(connIp.startsWith("10.100.72")){
                 logger.info("New connection from " + connIp);
@@ -110,20 +114,20 @@ public class SimpleServer extends WebSocketServer {
                         break;
 
                     case "ping 1":
-                        pingLab(l1.getClients());
+                        pingLab(l1);
                         break;
 
-                    case "ping 2":
-                        pingLab(l2.getClients());
-                        break;
+                    // case "ping 2":
+                    //     pingLab(l2.getClients());
+                    //     break;
 
-                    case "ping 3":
-                        pingLab(l3.getClients());
-                        break;
+                    // case "ping 3":
+                    //     pingLab(l3.getClients());
+                    //     break;
 
-                    case "ping 4":
-                        pingLab(l4.getClients());
-                        break;
+                    // case "ping 4":
+                    //     pingLab(l4.getClients());
+                    //     break;
                     
                     case "send":
                         sendFile();
@@ -180,9 +184,18 @@ public class SimpleServer extends WebSocketServer {
         }
     }
 
-    public void pingLab(ConcurrentHashMap<String, Client> clients){
-        for(Client client : clients.values()){
-            client.getConn().send("PING");
+    @Override
+    public void onWebsocketPing(WebSocket conn, Framedata f){
+
+    }
+
+    public void pingLab(BaseLab lab){
+        ConcurrentHashMap<String, Client> clients = lab.getClients();
+        Iterator<Map.Entry<String, Client>> iterator = clients.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Client> entry = iterator.next();
+
+            entry.getValue().getConn().send("PING");
         }
     }
 }
