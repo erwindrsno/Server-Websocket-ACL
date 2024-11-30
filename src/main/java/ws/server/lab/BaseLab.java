@@ -9,6 +9,7 @@ import org.java_websocket.WebSocket;
 
 //q : kenapa perlu bikin parent class?
 //a : reusability, supaya ketika perlu konfigurasi untuk lab tertentu, cukup konfig di children class nya aja tanpa berpengaruh ke class parent.
+// 
 
 public class BaseLab {
     ConcurrentHashMap<String, Client> clients = new ConcurrentHashMap<>();
@@ -31,7 +32,7 @@ public class BaseLab {
             clients.put(strIp, new Client(strHostname));
         }
     }
-
+ 
     public int getClientsCounts(){
         return clientsCounts;
     }
@@ -52,8 +53,11 @@ public class BaseLab {
         return clients;
     }
 
+    public void setClientConnection(String ip, WebSocket conn){
+        clients.get(ip).setConn(conn);
+    }
+
     public class Client{
-        // private String ip;
         private String hostname;
         private boolean isActive;
         private WebSocket conn;
