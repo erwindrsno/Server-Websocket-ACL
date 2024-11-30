@@ -9,7 +9,7 @@ public class App {
         String host = "192.168.0.102";
         int port = 8887;
 
-        WebSocketServer server = new SimpleServer(new InetSocketAddress(host, port));
+        WebSocketServer server = new Server(new InetSocketAddress(host, port));
         server.run();
     }
 }

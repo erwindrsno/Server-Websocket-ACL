@@ -24,9 +24,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ws.server.lab.*;
 import ws.server.lab.BaseLab.Client;
 
-public class SimpleServer extends WebSocketServer {
+public class Server extends WebSocketServer {
     final int CHUNK_SIZE = 10240;
-    Logger logger = LoggerFactory.getLogger(SimpleServer.class);
+    Logger logger = LoggerFactory.getLogger(Server.class);
     Scanner sc = new Scanner(System.in);
 
     BaseLab l1 = new LabOne();
@@ -34,7 +34,7 @@ public class SimpleServer extends WebSocketServer {
     BaseLab l3 = new LabThree();
     BaseLab l4 = new LabFour();
 
-    public SimpleServer(InetSocketAddress address) {
+    public Server(InetSocketAddress address) {
         super(address);
     }
 
@@ -72,9 +72,12 @@ public class SimpleServer extends WebSocketServer {
                 l3.setActiveByIP(connIp);
                 logger.info(l3.getHostnameByIP(connIp) + " is active");
             } 
-            else{
+            else if(connIp.startsWith("10.100.74")){
                 l4.setActiveByIP(connIp);
                 logger.info(l4.getHostnameByIP(connIp) + " is active");
+            }
+            else{
+                logger.info("Unknown IP");
             }
         }
     }
@@ -182,24 +185,20 @@ public class SimpleServer extends WebSocketServer {
         }
     }
 
-    @Override
-    public void onWebsocketPing(WebSocket conn, Framedata f){
-
-    }
-
     public void pingLab(BaseLab lab){
         ConcurrentHashMap<String, Client> clients = lab.getClients();
         Iterator<Map.Entry<String, Client>> iterator = clients.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Client> entry = iterator.next();
             WebSocket conn = entry.getValue().getConn();
-            if(conn != null){
-                conn.send("PING");
+            if(conn == null){
+                continue;
             }
+            conn.send("PING");
             //else: tampilkan yang belum terhubung
-            else {
+            // else {
 
-            }
+            // }
         }
     }
 }
