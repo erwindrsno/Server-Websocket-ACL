@@ -40,15 +40,12 @@ public class SimpleServer extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
+        logger.info("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
         String connIp = conn.getRemoteSocketAddress().getAddress().getHostAddress();
             if(connIp.startsWith("10.100.71")){
-                // logger.info("New connection from " + connIp);
-                // logger.info("Hostname is : " + conn.getRemoteSocketAddress().getHostName());
                 l1.setClientConnection(connIp, conn);
-                // l1.getClients().get(connIp).getConn().toString();
             } 
             else if(connIp.startsWith("10.100.72")){
-                // logger.info("New connection from " + connIp);
                 l2.setClientConnection(connIp, conn);
             }
             else if(connIp.startsWith("10.100.73")){
@@ -118,17 +115,17 @@ public class SimpleServer extends WebSocketServer {
                         pingLab(l1);
                         break;
 
-                    // case "ping 2":
-                    //     pingLab(l2.getClients());
-                    //     break;
+                    case "ping 2":
+                        pingLab(l2);
+                        break;
 
-                    // case "ping 3":
-                    //     pingLab(l3.getClients());
-                    //     break;
+                    case "ping 3":
+                        pingLab(l3);
+                        break;
 
-                    // case "ping 4":
-                    //     pingLab(l4.getClients());
-                    //     break;
+                    case "ping 4":
+                        pingLab(l4);
+                        break;
                     
                     case "send":
                         sendFile();
@@ -192,11 +189,17 @@ public class SimpleServer extends WebSocketServer {
 
     public void pingLab(BaseLab lab){
         ConcurrentHashMap<String, Client> clients = lab.getClients();
-        // logger.info(clients.get("10.100.71.209").getConn().toString());
         Iterator<Map.Entry<String, Client>> iterator = clients.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Client> entry = iterator.next();
-            entry.getValue().getConn().send("PING");
+            WebSocket conn = entry.getValue().getConn();
+            if(conn != null){
+                conn.send("PING");
+            }
+            //else: tampilkan yang belum terhubung
+            else {
+
+            }
         }
     }
 }
