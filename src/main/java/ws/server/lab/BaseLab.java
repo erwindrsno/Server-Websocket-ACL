@@ -29,7 +29,7 @@ public class BaseLab {
             }
             String strIp = ip.toString();
             String strHostname = hostname.toString();
-            clients.put(strIp, new Client(strHostname));
+            this.clients.put(strIp, new Client(strHostname));
         }
     }
  
@@ -38,23 +38,23 @@ public class BaseLab {
     }
 
     public String getHostnameByIP(String ip){
-        return clients.get(ip).getHostname();
+        return this.clients.get(ip).getHostname();
     }
 
     public boolean getStatusByIP(String ip){
-        return clients.get(ip).getStatus();
+        return this.clients.get(ip).getStatus();
     }
 
     public void setActiveByIP(String ip){
-        clients.get(ip).setActive();
-    }
-
-    public ConcurrentHashMap<String, Client> getClients(){
-        return clients;
+        this.clients.get(ip).setActive();
     }
 
     public void setClientConnection(String ip, WebSocket conn){
-        clients.get(ip).setConn(conn);
+        this.clients.get(ip).setConn(conn);
+    }
+
+    public ConcurrentHashMap<String, Client> getClients(){
+        return this.clients;
     }
 
     public class Client{

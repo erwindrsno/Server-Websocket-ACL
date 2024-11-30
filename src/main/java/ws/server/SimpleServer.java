@@ -39,9 +39,11 @@ public class SimpleServer extends WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         String connIp = conn.getRemoteSocketAddress().getAddress().getHostAddress();
             if(connIp.startsWith("10.100.71")){
+                logger.info("New connection from " + connIp);
                 l1.setClientConnection(connIp, conn);
             } 
             else if(connIp.startsWith("10.100.72")){
+                logger.info("New connection from " + connIp);
                 l2.setClientConnection(connIp, conn);
             }
             else if(connIp.startsWith("10.100.73")){
