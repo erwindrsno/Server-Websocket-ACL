@@ -60,7 +60,7 @@ public class BaseLab {
     public class Client{
         private String hostname;
         private boolean isActive;
-        private WebSocket conn;
+        private volatile WebSocket conn;
 
         public Client(String hostname){
             this.hostname = hostname;

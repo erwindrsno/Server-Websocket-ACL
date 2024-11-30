@@ -42,12 +42,13 @@ public class SimpleServer extends WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         String connIp = conn.getRemoteSocketAddress().getAddress().getHostAddress();
             if(connIp.startsWith("10.100.71")){
-                logger.info("New connection from " + connIp);
+                // logger.info("New connection from " + connIp);
+                // logger.info("Hostname is : " + conn.getRemoteSocketAddress().getHostName());
                 l1.setClientConnection(connIp, conn);
-                l1.getClients().get(connIp).getConn().toString();
+                // l1.getClients().get(connIp).getConn().toString();
             } 
             else if(connIp.startsWith("10.100.72")){
-                logger.info("New connection from " + connIp);
+                // logger.info("New connection from " + connIp);
                 l2.setClientConnection(connIp, conn);
             }
             else if(connIp.startsWith("10.100.73")){
@@ -191,10 +192,10 @@ public class SimpleServer extends WebSocketServer {
 
     public void pingLab(BaseLab lab){
         ConcurrentHashMap<String, Client> clients = lab.getClients();
+        // logger.info(clients.get("10.100.71.209").getConn().toString());
         Iterator<Map.Entry<String, Client>> iterator = clients.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Client> entry = iterator.next();
-
             entry.getValue().getConn().send("PING");
         }
     }
