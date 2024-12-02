@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,8 +36,11 @@ public class Server extends WebSocketServer {
     BaseLab l3 = new LabThree();
     BaseLab l4 = new LabFour();
 
+    FileHandler fileHandler;
+
     public Server(InetSocketAddress address) {
         super(address);
+        this.fileHandler = new FileHandler(this);
     }
 
     @Override
@@ -131,7 +136,7 @@ public class Server extends WebSocketServer {
                         break;
                     
                     case "send":
-                        sendFile();
+                        initFile();
                         break;
                 }
             }
@@ -142,47 +147,6 @@ public class Server extends WebSocketServer {
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         System.out.println(
                 "closed " + conn.getRemoteSocketAddress().getAddress() + " with exit code " + code + " additional info: " + reason);
-    }
-
-    public void sendFile() {
-        File file = new File("T06xxyyy.zip");
-
-        if (!file.exists()) {
-            logger.error("File not found");
-            return;
-        }
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            byte[] buffer = new byte[CHUNK_SIZE];
-            int bytesRead;
-
-            // logger.info("Sending file by chunking (10240 bytes)");
-            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                logger.info("Sending 10240");
-                ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
-
-                broadcast(byteBuffer);
-            }
-            logger.info("File sent");
-        } catch (Exception e) {
-            logger.error("Error at sending file");
-            e.printStackTrace();
-        }
-
-        try {
-            //TODO : NEED TO REHANDLE
-
-            // logger.info("Sending file name and user name");
-            // String fileName = file.getName();
-            // UserFile userFile = new UserFile("car", fileName);
-
-            // ObjectMapper mapper = new ObjectMapper();
-            // String json = mapper.writeValueAsString(userFile);
-            // broadcast(json);
-            // logger.info("File name and user name sent");
-        } catch (Exception e) {
-            logger.error("error at sending file name and user name");
-            e.printStackTrace();
-        }
     }
 
     public void pingLab(BaseLab lab){
@@ -201,4 +165,40 @@ public class Server extends WebSocketServer {
             // }
         }
     }
+
+    //NOTE: in the switch case "send" could be just a simple call to sendFile() instead of initFile
+    //but for later on convenience, since we are going to handle multiple file,
+    //I don't want to overbloat the websocket logic.
+    public void initFile(){
+        File file = new File("T06xxyyy.zip");
+        this.fileHandler.sendFile(file);
+    }
+
+    //TODO: need to create file initialization
+    //TODO: passing arguments using this keyword to filehandler
+
+    // public void sendFile() {
+    //     File file = new File("T06xxyyy.zip");
+
+    //     if (!file.exists()) {
+    //         logger.error("File not found");
+    //         return;
+    //     }
+    //     try (FileInputStream fileInputStream = new FileInputStream(file)) {
+    //         byte[] buffer = new byte[CHUNK_SIZE];
+    //         int bytesRead;
+
+    //         // logger.info("Sending file by chunking (10240 bytes)");
+    //         while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+    //             logger.info("Sending 10240");
+    //             ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
+
+    //             broadcast(byteBuffer);
+    //         }
+    //         logger.info("File sent");
+    //     } catch (Exception e) {
+    //         logger.error("Error at sending file");
+    //         e.printStackTrace();
+    //     }
+    // }
 }
