@@ -56,8 +56,11 @@ public class Server extends WebSocketServer {
             else if(connIp.startsWith("10.100.73")){
                 l3.setClientConnection(connIp, conn);
             } 
-            else{
+            else if(connIp.startsWith("10.100.74")){
                 l4.setClientConnection(connIp, conn);
+            }
+            else{
+                logger.info("Unknown IP which is: "  + connIp);
             }
     }
 
@@ -82,7 +85,8 @@ public class Server extends WebSocketServer {
                 logger.info(l4.getHostnameByIP(connIp) + " is active");
             }
             else{
-                logger.info("Unknown IP");
+                logger.info("Pong received from " + connIp);
+                // logger.info("Unknown IP");
             }
         }
     }
@@ -155,10 +159,9 @@ public class Server extends WebSocketServer {
         while (iterator.hasNext()) {
             Map.Entry<String, Client> entry = iterator.next();
             WebSocket conn = entry.getValue().getConn();
-            if(conn == null){
-                continue;
+            if(conn != null){
+                conn.send("PING");
             }
-            conn.send("PING");
             //else: tampilkan yang belum terhubung
             // else {
 
@@ -167,7 +170,7 @@ public class Server extends WebSocketServer {
     }
 
     //NOTE: in the switch case "send" could be just a simple call to sendFile() instead of initFile
-    //but for later on convenience, since we are going to handle multiple file,
+    //but for later on convenience, since I am going to handle multiple file,
     //I don't want to overbloat the websocket logic.
     public void initFile(){
         File file = new File("T06xxyyy.zip");

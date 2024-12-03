@@ -8,14 +8,62 @@ import com.google.common.hash.*;
 
 public class FileTest {
     @Test
-    public void hashingFile(){
+    public void hashingFileT06(){
         Path filePath = Paths.get("T06xxyyy.zip");
         
         try{
             byte[] fileBytes = Files.readAllBytes(filePath);
             
-            String hashedBytes = Hashing.sha256().hashBytes(fileBytes).toString();
+            byte[] hashedBytes = Hashing.sha256().hashBytes(fileBytes).asBytes();
             System.out.println("Hashed is : " + hashedBytes);
+
+            System.out.println("The length is: " + hashedBytes.length);
+
+            System.out.println("First byte is : " + hashedBytes[0]);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
+    @Test
+    public void hashingFileClient(){
+        Path filePath = Paths.get("Client.zip");
+        
+        try{
+            byte[] fileBytes = Files.readAllBytes(filePath);
+            
+            byte[] hashedBytes = Hashing.sha256().hashBytes(fileBytes).asBytes();
+            System.out.println("Hashed CLIENT is : " + hashedBytes);
+
+            System.out.println("The length is: " + hashedBytes.length);
+
+
+            System.out.println("First byte is : " + hashedBytes[0]);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
+    @Test
+    public void hashingFileArchive(){
+        Path filePath = Paths.get("archive.zip");
+        
+        try{
+            byte[] fileBytes = Files.readAllBytes(filePath);
+            
+            byte[] hashedBytes = Hashing.sha256().hashBytes(fileBytes).asBytes();
+            System.out.println("Hashed archive is : " + hashedBytes);
+
+            System.out.println("The length is: " + hashedBytes.length);
+
+
+            System.out.println("First byte is : " + hashedBytes[0]);
         }
         catch(Exception e){
             e.printStackTrace();

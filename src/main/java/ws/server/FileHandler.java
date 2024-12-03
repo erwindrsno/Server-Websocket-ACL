@@ -8,7 +8,7 @@ import org.slf4j.*;
 
 public class FileHandler {
     Server server;
-    int CHUNK_SIZE;
+    int CHUNK_SIZE = 10240;
     Logger logger = LoggerFactory.getLogger(FileHandler.class);
 
     public FileHandler(Server server){
@@ -27,7 +27,7 @@ public class FileHandler {
 
             // logger.info("Sending file by chunking (10240 bytes)");
             while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                logger.info("Sending 10240");
+                // logger.info("Sending 10240");
                 ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
 
                 this.server.broadcast(byteBuffer);
@@ -35,7 +35,7 @@ public class FileHandler {
             logger.info("File sent");
         } catch (Exception e) {
             logger.error("Error at sending file");
-            e.printStackTrace();
+            System.err.println(e);
         }
 
         try {
@@ -51,7 +51,7 @@ public class FileHandler {
             // logger.info("File name and user name sent");
         } catch (Exception e) {
             logger.error("error at sending file name and user name");
-            e.printStackTrace();
+            System.err.println(e);
         }
     }
 }
