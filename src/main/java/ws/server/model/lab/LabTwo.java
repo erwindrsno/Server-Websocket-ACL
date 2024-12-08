@@ -1,4 +1,4 @@
-package ws.server.lab;
+package ws.server.model.lab;
 
 public class LabTwo extends BaseLab{
     public LabTwo(){

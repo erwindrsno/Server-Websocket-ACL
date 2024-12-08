@@ -1,5 +1,7 @@
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
 import org.junit.jupiter.api.Test;
@@ -14,12 +16,16 @@ public class FileTest {
         try{
             byte[] fileBytes = Files.readAllBytes(filePath);
             
-            byte[] hashedBytes = Hashing.sha256().hashBytes(fileBytes).asBytes();
+            String hashedBytes = Hashing.sha256().hashBytes(fileBytes).toString();
+            String hashed2 = Hashing.sha256().hashBytes(fileBytes).toString();
             System.out.println("Hashed is : " + hashedBytes);
 
-            System.out.println("The length is: " + hashedBytes.length);
+            System.out.println("The length is: " + hashedBytes.length());
 
-            System.out.println("First byte is : " + hashedBytes[0]);
+            // System.out.println("First byte is : " + hashedBytes[0]);
+
+            // assertArrayEquals(hashedBytes, hashed2);
+            assertEquals(hashedBytes, hashed2);
         }
         catch(Exception e){
             e.printStackTrace();

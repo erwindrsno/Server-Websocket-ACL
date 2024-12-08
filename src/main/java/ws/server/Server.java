@@ -23,11 +23,10 @@ import org.slf4j.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ws.server.lab.*;
-import ws.server.lab.BaseLab.Client;
+import ws.server.model.lab.*;
+import ws.server.model.lab.BaseLab.Client;
 
 public class Server extends WebSocketServer {
-    final int CHUNK_SIZE = 10240;
     Logger logger = LoggerFactory.getLogger(Server.class);
     Scanner sc = new Scanner(System.in);
 
@@ -35,12 +34,12 @@ public class Server extends WebSocketServer {
     BaseLab l2 = new LabTwo();
     BaseLab l3 = new LabThree();
     BaseLab l4 = new LabFour();
+    WebSocket connLocal = null;
 
     FileHandler fileHandler;
 
     public Server(InetSocketAddress address) {
         super(address);
-        this.fileHandler = new FileHandler(this);
     }
 
     @Override
@@ -60,6 +59,7 @@ public class Server extends WebSocketServer {
                 l4.setClientConnection(connIp, conn);
             }
             else{
+                connLocal = conn;
                 logger.info("Unknown IP which is: "  + connIp);
             }
     }
@@ -86,8 +86,13 @@ public class Server extends WebSocketServer {
             }
             else{
                 logger.info("Pong received from " + connIp);
-                // logger.info("Unknown IP");
             }
+        }
+        else if(message.equals("READY-FILE~")){
+            this.fileHandler.startSend();
+        }
+        else if(message.equals("FINISH-FILE~")){
+            this.fileHandler.sendPostMetadata();
         }
     }
 
@@ -116,7 +121,6 @@ public class Server extends WebSocketServer {
         new Thread(() -> {
             logger.info("Command receiver thread started");
             while(true){
-                // System.out.print("Command : ");
                 String command = sc.nextLine();
                 switch(command){
                     case "ping":
@@ -138,9 +142,15 @@ public class Server extends WebSocketServer {
                     case "ping 4":
                         pingLab(l4);
                         break;
+
+                    case "ping 0":
+                        pingLocal();
+                        break;
                     
                     case "send":
-                        initFile();
+                        File file = new File("T06xxyyy.zip");
+                        this.fileHandler = new FileHandler(this, file);
+                        this.fileHandler.sendPreMetadata();
                         break;
                 }
             }
@@ -163,45 +173,10 @@ public class Server extends WebSocketServer {
                 conn.send("PING");
             }
             //else: tampilkan yang belum terhubung
-            // else {
-
-            // }
         }
     }
 
-    //NOTE: in the switch case "send" could be just a simple call to sendFile() instead of initFile
-    //but for later on convenience, since I am going to handle multiple file,
-    //I don't want to overbloat the websocket logic.
-    public void initFile(){
-        File file = new File("T06xxyyy.zip");
-        this.fileHandler.sendFile(file);
+    public void pingLocal(){
+        this.connLocal.send("PING");
     }
-
-    //TODO: need to create file initialization
-    //TODO: passing arguments using this keyword to filehandler
-
-    // public void sendFile() {
-    //     File file = new File("T06xxyyy.zip");
-
-    //     if (!file.exists()) {
-    //         logger.error("File not found");
-    //         return;
-    //     }
-    //     try (FileInputStream fileInputStream = new FileInputStream(file)) {
-    //         byte[] buffer = new byte[CHUNK_SIZE];
-    //         int bytesRead;
-
-    //         // logger.info("Sending file by chunking (10240 bytes)");
-    //         while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-    //             logger.info("Sending 10240");
-    //             ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
-
-    //             broadcast(byteBuffer);
-    //         }
-    //         logger.info("File sent");
-    //     } catch (Exception e) {
-    //         logger.error("Error at sending file");
-    //         e.printStackTrace();
-    //     }
-    // }
 }

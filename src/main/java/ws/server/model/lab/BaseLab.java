@@ -1,5 +1,6 @@
-package ws.server.lab;
+package ws.server.model.lab;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,7 @@ import org.java_websocket.WebSocket;
 //a : reusability, supaya ketika perlu konfigurasi untuk lab tertentu, cukup konfig di children class nya aja tanpa berpengaruh ke class parent.
 // 
 
-public class BaseLab {
+public class BaseLab implements Serializable{
     ConcurrentHashMap<String, Client> clients = new ConcurrentHashMap<>();
     int clientsCounts;
 

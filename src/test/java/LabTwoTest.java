@@ -1,8 +1,8 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-import ws.server.lab.LabTwo;
-import ws.server.lab.BaseLab;
+import ws.server.model.lab.BaseLab;
+import ws.server.model.lab.LabTwo;
 
 public class LabTwoTest {
     @Test

@@ -1,35 +1,53 @@
 package ws.server;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.Set;
+import java.nio.file.attribute.AclEntryPermission;
 
 import org.slf4j.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.hash.Hashing;
+
+import ws.server.model.Acl;
+import ws.server.model.metadata.PostMetadata;
+import ws.server.model.metadata.PreMetadata;
 
 public class FileHandler {
     Server server;
     int CHUNK_SIZE = 10240;
     Logger logger = LoggerFactory.getLogger(FileHandler.class);
+    File file;
 
-    public FileHandler(Server server){
+    Acl aclFetch = new Acl();
+
+    public FileHandler(Server server, File file){
         this.server = server;
+        this.file = file;
     }
 
-    public void sendFile(File file){
-        if (!file.exists()) {
+    public void startSend(){
+        if (!this.file.exists()) {
             logger.error("File not found");
             return;
         }
+        logger.info("SENDING FILE");
 
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+        try (FileInputStream fileInputStream = new FileInputStream(this.file)) {
             byte[] buffer = new byte[CHUNK_SIZE];
             int bytesRead;
 
-            // logger.info("Sending file by chunking (10240 bytes)");
             while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                // logger.info("Sending 10240");
                 ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
-
                 this.server.broadcast(byteBuffer);
             }
             logger.info("File sent");
@@ -37,21 +55,39 @@ public class FileHandler {
             logger.error("Error at sending file");
             System.err.println(e);
         }
+    }
 
-        try {
-            //TODO : NEED TO REHANDLE
+    public void sendPreMetadata(){
+        try{
+            PreMetadata pmd = new PreMetadata(this.file.length(), this.CHUNK_SIZE);
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(pmd);
+            this.server.broadcast("PRE-METADATA~"+json);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
-            // logger.info("Sending file name and user name");
-            // String fileName = file.getName();
-            // UserFile userFile = new UserFile("car", fileName);
+    public void sendPostMetadata(){
+        logger.info("SENDING POST META DATA");
+        try{
+            Path filePath = Paths.get(file.getName());
 
-            // ObjectMapper mapper = new ObjectMapper();
-            // String json = mapper.writeValueAsString(userFile);
-            // broadcast(json);
-            // logger.info("File name and user name sent");
-        } catch (Exception e) {
-            logger.error("error at sending file name and user name");
-            System.err.println(e);
+            //hashing
+            String hashed = Hashing.sha256().hashBytes(Files.readAllBytes(filePath)).toString();
+
+            //generate ACL
+            Set<AclEntryPermission> aclEntry = aclFetch.getRWXAcl();
+
+            logger.info(aclEntry.toString());
+
+            PostMetadata postMetadata = new PostMetadata(this.file.getName(), "car", hashed, aclEntry);
+
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(postMetadata);
+            this.server.broadcast("POST-METADATA~"+json);
+        } catch(Exception e){
+            e.printStackTrace();
         }
     }
 }
