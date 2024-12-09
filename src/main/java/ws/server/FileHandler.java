@@ -58,6 +58,7 @@ public class FileHandler {
     }
 
     public void sendPreMetadata(){
+        logger.info("SENDING PRE META DATA");
         try{
             PreMetadata pmd = new PreMetadata(this.file.length(), this.CHUNK_SIZE);
             ObjectMapper mapper = new ObjectMapper();
