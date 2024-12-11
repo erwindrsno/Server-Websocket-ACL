@@ -180,3 +180,7 @@ public class Server extends WebSocketServer {
         this.connLocal.send("PING");
     }
 }
+
+
+// ping harus periodic
+// trigger onClose conenction

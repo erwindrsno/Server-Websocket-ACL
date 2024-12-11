@@ -82,7 +82,7 @@ public class FileHandler {
 
             logger.info(aclEntry.toString());
 
-            PostMetadata postMetadata = new PostMetadata(this.file.getName(), "car", hashed, aclEntry);
+            PostMetadata postMetadata = new PostMetadata(this.file.getName(), "ftis\\i20002", hashed, aclEntry);
 
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(postMetadata);
