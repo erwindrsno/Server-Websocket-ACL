@@ -91,9 +91,6 @@ public class Server extends WebSocketServer {
         else if(message.equals("READY-FILE~")){
             this.fileHandler.startSend();
         }
-        else if(message.equals("FINISH-FILE~")){
-            this.fileHandler.sendPostMetadata();
-        }
     }
 
     @Override
@@ -150,7 +147,7 @@ public class Server extends WebSocketServer {
                     case "send":
                         File file = new File("T06xxyyy.zip");
                         this.fileHandler = new FileHandler(this, file);
-                        this.fileHandler.sendPreMetadata();
+                        this.fileHandler.sendFileMetadata();
                         break;
                 }
             }

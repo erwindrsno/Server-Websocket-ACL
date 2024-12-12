@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.Hashing;
 
 import ws.server.model.Acl;
+import ws.server.model.FileMetadata;
 import ws.server.model.metadata.PostMetadata;
 import ws.server.model.metadata.PreMetadata;
 
@@ -57,36 +58,21 @@ public class FileHandler {
         }
     }
 
-    public void sendPreMetadata(){
-        logger.info("SENDING PRE META DATA");
-        try{
-            PreMetadata pmd = new PreMetadata(this.file.length(), this.CHUNK_SIZE);
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(pmd);
-            this.server.broadcast("PRE-METADATA~"+json);
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public void sendPostMetadata(){
-        logger.info("SENDING POST META DATA");
+    public void sendFileMetadata(){
+        logger.info("SENDING FILE META DATA");
         try{
             Path filePath = Paths.get(file.getName());
 
             //hashing
-            String hashed = Hashing.sha256().hashBytes(Files.readAllBytes(filePath)).toString();
+            String signature = Hashing.sha256().hashBytes(Files.readAllBytes(filePath)).toString();
 
             //generate ACL
             Set<AclEntryPermission> aclEntry = aclFetch.getRWXAcl();
 
-            logger.info(aclEntry.toString());
-
-            PostMetadata postMetadata = new PostMetadata(this.file.getName(), "ftis\\i20002", hashed, aclEntry);
-
+            FileMetadata fileMetadata = new FileMetadata(this.file.length(), this.CHUNK_SIZE, this.file.getName(), "car", signature, aclEntry);
             ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(postMetadata);
-            this.server.broadcast("POST-METADATA~"+json);
+            String json = mapper.writeValueAsString(fileMetadata);
+            this.server.broadcast("FILE-METADATA~"+json);
         } catch(Exception e){
             e.printStackTrace();
         }
