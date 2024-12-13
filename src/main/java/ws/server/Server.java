@@ -23,17 +23,17 @@ import org.slf4j.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ws.server.model.lab.*;
-import ws.server.model.lab.BaseLab.Client;
+import ws.server.model.BaseLab;
+import ws.server.model.BaseLab.Client;
 
 public class Server extends WebSocketServer {
     Logger logger = LoggerFactory.getLogger(Server.class);
     Scanner sc = new Scanner(System.in);
 
-    BaseLab l1 = new LabOne();
-    BaseLab l2 = new LabTwo();
-    BaseLab l3 = new LabThree();
-    BaseLab l4 = new LabFour();
+    BaseLab l1 = new BaseLab(1,40);
+    BaseLab l2 = new BaseLab(2,45);
+    BaseLab l3 = new BaseLab(3, 35);
+    BaseLab l4 = new BaseLab(4, 35);
     WebSocket connLocal = null;
 
     FileHandler fileHandler;
@@ -60,7 +60,7 @@ public class Server extends WebSocketServer {
             }
             else{
                 connLocal = conn;
-                logger.info("Unknown IP which is: "  + connIp);
+                logger.info("Local IP is: "  + connIp);
             }
     }
 

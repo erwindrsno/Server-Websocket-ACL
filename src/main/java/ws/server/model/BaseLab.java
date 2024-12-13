@@ -1,4 +1,4 @@
-package ws.server.model.lab;
+package ws.server.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class BaseLab implements Serializable{
     ConcurrentHashMap<String, Client> clients = new ConcurrentHashMap<>();
     int clientsCounts;
 
-    BaseLab(int labId, int clientsCountPerLab){
+    public BaseLab(int labId, int clientsCountPerLab){
         this.clientsCounts = clientsCountPerLab;
         for (int i = 1; i <= clientsCountPerLab; i++) {
             StringBuilder ip = new StringBuilder("10.100.7"+labId+".2");

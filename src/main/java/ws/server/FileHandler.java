@@ -20,8 +20,6 @@ import com.google.common.hash.Hashing;
 
 import ws.server.model.Acl;
 import ws.server.model.FileMetadata;
-import ws.server.model.metadata.PostMetadata;
-import ws.server.model.metadata.PreMetadata;
 
 public class FileHandler {
     Server server;
